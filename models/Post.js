@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const PostSchema = mongoose.Schema(
   {
     user_posts: {
-      type: String,       // id of the user
+      type: String, // id of the user
     },
     title: {
       type: String,
@@ -17,11 +17,10 @@ const PostSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    // post_comments: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Comment",
-    //   required: true,
-    // },
+    post_comments: {
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true }
 );

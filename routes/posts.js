@@ -7,7 +7,9 @@ const {
   createPost,
   editPost,
   deletePost,
-  myPosts
+  myPosts,
+  createComments,
+  getAllComments,
 } = require("../controllers/posts");
 
 // getAllPosts
@@ -26,6 +28,12 @@ router.put("/posts/editPost/:id", confirmAuth, editPost);
 router.delete("/posts/deletePost/:id", confirmAuth, deletePost);
 
 // get user's post
-router.get('/posts/my-posts',confirmAuth,myPosts)
+router.get("/posts/my-posts", confirmAuth, myPosts);
+
+// create a comment
+router.post("/posts/add-comment/:id", confirmAuth, createComments);
+
+// get all comments
+router.get("/posts/get-all-comments/:id", confirmAuth, getAllComments);
 
 module.exports = router;

@@ -17,6 +17,7 @@ const UserSchema = mongoose.Schema(
     },
     bio: {
       type: String,
+      default:""
     },
   },
   { timestamps: true }

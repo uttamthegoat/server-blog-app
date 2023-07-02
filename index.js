@@ -18,8 +18,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Available Routes
-app.use("/api/v1/blog-app/home", require("./routes/posts"));
 app.use("/api/v1/blog-app/auth", require("./routes/auth"));
+app.use("/api/v1/blog-app/home", require("./routes/posts"));
 
 // home route
 app.get("/", (req, res) => {

@@ -1,5 +1,5 @@
-const CustomError = require("../errors/CustomError");
 const Post = require("../models/Post");
+const CustomError = require("../errors/CustomError");
 
 // GET : get all posts
 const getAllPosts = async (req, res, next) => {
@@ -39,6 +39,14 @@ const createPost = async (req, res, next) => {
 // PUT : edit a post
 const editPost = async (req, res, next) => {
   try {
+    const { user_posts } = await Post.findById(req.params.id);
+    if (user_posts !== req.user.id) {
+      throw new CustomError(
+        401,
+        false,
+        "You are not authorised to edit this post"
+      );
+    }
     const new_Post = {
       title: req.body.title,
       description: req.body.description,
@@ -58,6 +66,14 @@ const editPost = async (req, res, next) => {
 // DELETE : delete a post
 const deletePost = async (req, res, next) => {
   try {
+    const { user_posts } = await Post.findById(req.params.id);
+    if (user_posts !== req.user.id) {
+      throw new CustomError(
+        401,
+        false,
+        "You are not authorised to delete this post"
+      );
+    }
     const deleted_Post = await Post.findByIdAndDelete(req.params.id);
     res.status(200).json({ success: true, post: deleted_Post });
   } catch (error) {
@@ -75,6 +91,33 @@ const myPosts = async (req, res, next) => {
   }
 };
 
+// add a comment  //send the id of the post in req.params
+const createComments = async (req, res, next) => {
+  try {
+    const { post_comments } = await Post.findById(req.params.id);
+    const commented_Post = await Post.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: { post_comments: post_comments.concat(req.body.comment) } },
+      { new: true }
+    );
+    res
+      .status(200)
+      .json({ success: true, message: "comment added successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get all comments
+const getAllComments = async (req, res, next) => {
+  try {
+    const { post_comments } = await Post.findById(req.params.id);
+    res.status(200).json({ success: true, all_Comments: post_comments });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllPosts,
   getPost,
@@ -82,4 +125,6 @@ module.exports = {
   editPost,
   deletePost,
   myPosts,
+  createComments,
+  getAllComments,
 };
