@@ -79,6 +79,7 @@ const logout = async (req, res, next) => {
 const getUserDetails = async (req, res, next) => {
   try {
     const userId = req.user.id;
+    console.log(userId);
     const { name, email, bio } = await User.findById(userId);
     const userDetails = {
       name: name,

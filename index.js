@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Available Routes
-app.use("/api/v1/blog-app/", require("./routes/posts"));
+app.use("/api/v1/blog-app/home", require("./routes/posts"));
 app.use("/api/v1/blog-app/auth", require("./routes/auth"));
 
 // home route
@@ -28,7 +28,11 @@ app.get("/", (req, res) => {
 
 // throw error for wrong route
 app.all("*", (req, res, next) => {
-  throw new CustomError(404, false, "Route not found");
+  try {
+    throw new CustomError(404, false, "Route not defined");
+  } catch (error) {
+    next(error);
+  }
 });
 
 // handling error using express Global Error Handler
