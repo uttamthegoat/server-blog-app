@@ -69,7 +69,9 @@ const editPost = async (req, res, next) => {
     );
     if (!updated_Post)
       throw new CustomError(400, false, "Post was not Updated");
-    res.status(200).json({ success: true, post: updated_Post });
+    res
+      .status(200)
+      .json({ success: true, message: "Post was successfully updated" });
   } catch (error) {
     next(error);
   }
@@ -87,10 +89,15 @@ const deletePost = async (req, res, next) => {
         false,
         "You are not authorised to delete this post"
       );
+    const deleted_Comment = await Comment.findByIdAndDelete(post.post_comments);
+    if (!deleted_Comment)
+      throw new CustomError(400, false, "Comment to be deleted was not found");
     const deleted_Post = await Post.findByIdAndDelete(req.params.id);
     if (!deleted_Post)
       throw new CustomError(400, false, "Post was not deleted");
-    res.status(200).json({ success: true, post: deleted_Post });
+    res
+      .status(200)
+      .json({ success: true, message: "Post was successfully deleted" });
   } catch (error) {
     next(error);
   }

@@ -30,8 +30,12 @@ const getAllComments = async (req, res, next) => {
     if (!post) {
       throw new CustomError(404, false, "Post not found");
     }
-    const { comments } = await Comment.findById(post.post_comments);
-    res.status(200).json({ success: true, all_Comments: comments });
+    const all_Comments = await Comment.findById(post.post_comments);
+    if (!all_Comments)
+      throw new CustomError(400, false, "Comments are not found");
+    res
+      .status(200)
+      .json({ success: true, all_Comments: all_Comments.comments });
   } catch (error) {
     next(error);
   }
