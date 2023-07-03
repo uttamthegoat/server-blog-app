@@ -79,7 +79,9 @@ const logout = async (req, res, next) => {
 const getUserDetails = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { name, email, bio } = await User.findById(userId);
+    const { name, email, bio } = await User.findById(userId).select(
+      "-password"
+    );
     const userDetails = {
       name: name,
       email: email,

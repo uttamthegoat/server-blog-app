@@ -31,7 +31,7 @@ router.delete("/posts/deletePost/:id", confirmAuth, deletePost);
 router.get("/posts/my-posts", confirmAuth, myPosts);
 
 // create a comment
-router.post("/posts/add-comment/:id", confirmAuth, createComments);
+router.put("/posts/add-comment/:id", confirmAuth, createComments);
 
 // get all comments
 router.get("/posts/get-all-comments/:id", confirmAuth, getAllComments);

@@ -1,4 +1,5 @@
 const Post = require("../models/Post");
+const Comment = require("../models/Comment");
 const CustomError = require("../errors/CustomError");
 
 // GET : get all posts
@@ -24,11 +25,15 @@ const getPost = async (req, res, next) => {
 // POST : create a post
 const createPost = async (req, res, next) => {
   try {
+    const comment = await Comment.create({
+      comments: [],
+    });
     const new_Post = await Post.create({
       user_posts: req.user.id,
       title: req.body.title,
       description: req.body.description,
       tag: req.body.tag,
+      post_comments: comment._id,
     });
     res.status(200).json({ success: true, new_Post: new_Post });
   } catch (error) {
@@ -95,11 +100,15 @@ const myPosts = async (req, res, next) => {
 const createComments = async (req, res, next) => {
   try {
     const { post_comments } = await Post.findById(req.params.id);
-    const commented_Post = await Post.findOneAndUpdate(
-      { _id: req.params.id },
-      { $set: { post_comments: post_comments.concat(req.body.comment) } },
-      { new: true }
-    );
+    if (!post_comments) {
+      throw new CustomError(404, false, "Post not found");
+    }
+    const old_Comments = await Comment.findById(post_comments);
+    if (!old_Comments) {
+      throw new CustomError(404, false, "Comment not found");
+    }
+    old_Comments.comments = old_Comments.comments.concat(req.body.comment);
+    await old_Comments.save();
     res
       .status(200)
       .json({ success: true, message: "comment added successfully" });
@@ -112,7 +121,11 @@ const createComments = async (req, res, next) => {
 const getAllComments = async (req, res, next) => {
   try {
     const { post_comments } = await Post.findById(req.params.id);
-    res.status(200).json({ success: true, all_Comments: post_comments });
+    if (!post_comments) {
+      throw new CustomError(404, false, "Post not found");
+    }
+    const { comments } = await Comment.findById(post_comments);
+    res.status(200).json({ success: true, all_Comments: comments });
   } catch (error) {
     next(error);
   }
