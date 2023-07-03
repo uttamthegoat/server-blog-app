@@ -6,6 +6,7 @@ const CustomError = require("../errors/CustomError");
 const getAllPosts = async (req, res, next) => {
   try {
     const all_Posts = await Post.find();
+    if (!all_Posts) throw new CustomError(400, false, "Posts not to be found");
     res.status(200).json({ success: true, posts: all_Posts });
   } catch (error) {
     next(error);
@@ -16,6 +17,7 @@ const getAllPosts = async (req, res, next) => {
 const getPost = async (req, res, next) => {
   try {
     const get_Post = await Post.findById(req.params.id);
+    if (!get_Post) throw new CustomError(400, false, "Post not to be found");
     res.status(200).json({ success: true, get_Post: get_Post });
   } catch (error) {
     next(error);
@@ -28,6 +30,7 @@ const createPost = async (req, res, next) => {
     const comment = await Comment.create({
       comments: [],
     });
+    if (!comment) throw new CustomError(400, false, "Comment not created");
     const new_Post = await Post.create({
       user_posts: req.user.id,
       title: req.body.title,
@@ -35,6 +38,7 @@ const createPost = async (req, res, next) => {
       tag: req.body.tag,
       post_comments: comment._id,
     });
+    if (!new_Post) throw new CustomError(400, false, "Post not created");
     res.status(200).json({ success: true, new_Post: new_Post });
   } catch (error) {
     next(error);
@@ -44,14 +48,15 @@ const createPost = async (req, res, next) => {
 // PUT : edit a post
 const editPost = async (req, res, next) => {
   try {
-    const { user_posts } = await Post.findById(req.params.id);
-    if (user_posts !== req.user.id) {
+    const post = await Post.findById(req.params.id);
+    if (!post)
+      throw new CustomError(400, false, "The post to be edited was not found");
+    if (post.user_posts !== req.user.id)
       throw new CustomError(
         401,
         false,
         "You are not authorised to edit this post"
       );
-    }
     const new_Post = {
       title: req.body.title,
       description: req.body.description,
@@ -62,6 +67,8 @@ const editPost = async (req, res, next) => {
       { $set: new_Post },
       { new: true }
     );
+    if (!updated_Post)
+      throw new CustomError(400, false, "Post was not Updated");
     res.status(200).json({ success: true, post: updated_Post });
   } catch (error) {
     next(error);
@@ -71,15 +78,18 @@ const editPost = async (req, res, next) => {
 // DELETE : delete a post
 const deletePost = async (req, res, next) => {
   try {
-    const { user_posts } = await Post.findById(req.params.id);
-    if (user_posts !== req.user.id) {
+    const post = await Post.findById(req.params.id);
+    if (!post)
+      throw new CustomError(400, false, "The post to be deleted was not found");
+    if (post.user_posts !== req.user.id)
       throw new CustomError(
         401,
         false,
         "You are not authorised to delete this post"
       );
-    }
     const deleted_Post = await Post.findByIdAndDelete(req.params.id);
+    if (!deleted_Post)
+      throw new CustomError(400, false, "Post was not deleted");
     res.status(200).json({ success: true, post: deleted_Post });
   } catch (error) {
     next(error);
@@ -90,42 +100,9 @@ const deletePost = async (req, res, next) => {
 const myPosts = async (req, res, next) => {
   try {
     const my_Posts = await Post.find({ user_posts: req.user.id });
+    if (!my_Posts)
+      throw new CustomError(400, false, "Your posts were not found");
     res.status(200).json({ success: true, post: my_Posts });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// add a comment  //send the id of the post in req.params
-const createComments = async (req, res, next) => {
-  try {
-    const { post_comments } = await Post.findById(req.params.id);
-    if (!post_comments) {
-      throw new CustomError(404, false, "Post not found");
-    }
-    const old_Comments = await Comment.findById(post_comments);
-    if (!old_Comments) {
-      throw new CustomError(404, false, "Comment not found");
-    }
-    old_Comments.comments = old_Comments.comments.concat(req.body.comment);
-    await old_Comments.save();
-    res
-      .status(200)
-      .json({ success: true, message: "comment added successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// get all comments
-const getAllComments = async (req, res, next) => {
-  try {
-    const { post_comments } = await Post.findById(req.params.id);
-    if (!post_comments) {
-      throw new CustomError(404, false, "Post not found");
-    }
-    const { comments } = await Comment.findById(post_comments);
-    res.status(200).json({ success: true, all_Comments: comments });
   } catch (error) {
     next(error);
   }
@@ -138,6 +115,4 @@ module.exports = {
   editPost,
   deletePost,
   myPosts,
-  createComments,
-  getAllComments,
 };

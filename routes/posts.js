@@ -8,32 +8,24 @@ const {
   editPost,
   deletePost,
   myPosts,
-  createComments,
-  getAllComments,
 } = require("../controllers/posts");
 
 // getAllPosts
-router.get("/posts", confirmAuth, getAllPosts);
+router.route("/").get(confirmAuth, getAllPosts);
 
 // get a specific post
-router.get("/posts/getPost/:id", confirmAuth, getPost);
+router.route("/getPost/:id").get(confirmAuth, getPost);
 
 // create a post
-router.post("/posts/createPost", confirmAuth, createPost);
+router.route("/createPost").post(confirmAuth, createPost);
 
 // edit a specific post
-router.put("/posts/editPost/:id", confirmAuth, editPost);
+router.route("/editPost/:id").put(confirmAuth, editPost);
 
 // delete a specific post
-router.delete("/posts/deletePost/:id", confirmAuth, deletePost);
+router.route("/deletePost/:id").delete(confirmAuth, deletePost);
 
 // get user's post
-router.get("/posts/my-posts", confirmAuth, myPosts);
-
-// create a comment
-router.put("/posts/add-comment/:id", confirmAuth, createComments);
-
-// get all comments
-router.get("/posts/get-all-comments/:id", confirmAuth, getAllComments);
+router.route("/my-posts").get(confirmAuth, myPosts);
 
 module.exports = router;

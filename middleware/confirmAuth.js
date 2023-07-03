@@ -5,7 +5,11 @@ const confirmAuth = (req, res, next) => {
   try {
     const token = req.cookies.access_token;
     if (!token) {
-      throw new CustomError(401, false, "Please login first");
+      throw new CustomError(
+        401,
+        false,
+        "Login session Expired! Please Login Again"
+      );
     }
     const data = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = {

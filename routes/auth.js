@@ -6,22 +6,22 @@ const {
   login,
   logout,
   getUserDetails,
-  profileUpdate
+  profileUpdate,
 } = require("../controllers/auth");
 
 // signup route
-router.post("/signup", signup);
+router.route("/signup").post(signup);
 
 // login route
-router.post("/login", login);
+router.route("/login").post(login);
 
 // logout route
-router.get("/logout", logout);
+router.route("/logout").get(logout);
 
 // login route
-router.get("/getUserDetails", confirmAuth, getUserDetails);
+router.route("/getUserDetails").get(confirmAuth, getUserDetails);
 
 // profileUpdate route
-router.post("/profileUpdate", confirmAuth, profileUpdate);
+router.route("/profileUpdate").put(confirmAuth, profileUpdate);
 
 module.exports = router;

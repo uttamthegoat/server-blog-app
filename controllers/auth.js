@@ -100,19 +100,17 @@ const getUserDetails = async (req, res, next) => {
 // profileUpdate
 const profileUpdate = async (req, res, next) => {
   try {
-    let userInfo = {
-      bio: req.body.bio,
-    };
-    let user = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: userInfo },
+    let user = await User.findOneAndUpdate(
+      { _id: req.user.id },
+      { $set: { bio: req.body.bio } },
       { new: true }
     ).select("-password -createdAt -updatedAt -__v");
     res
       .status(200)
       .json({ success: true, message: "User details updates", user: user });
   } catch (error) {
-    next(error);
+    // next(error);
+    res.json({ err: error.message });
   }
 };
 
