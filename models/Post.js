@@ -2,12 +2,18 @@ const mongoose = require("mongoose");
 
 const PostSchema = mongoose.Schema(
   {
+    blog_image: {
+      // added image field. remember to add link in createPost endpoint
+      type: String,
+      trim: true,
+    },
     user_posts: {
-      type: String, // id of the user
+      type: String,
     },
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
@@ -16,6 +22,7 @@ const PostSchema = mongoose.Schema(
     tag: {
       type: String,
       required: true,
+      trim: true,
     },
     post_comments: {
       type: mongoose.Schema.Types.ObjectId,

@@ -21,6 +21,8 @@ app.use(express.json());
 app.use("/api/v1/blog-app/auth", require("./routes/auth"));
 app.use("/api/v1/blog-app/posts", require("./routes/posts"));
 app.use("/api/v1/blog-app/comments", require("./routes/comments"));
+app.use("/api/v1/blog-app/search", require("./routes/search"));
+// add search routes for tags and titles(posts), for names(users)
 
 // home route
 app.get("/", (req, res) => {
