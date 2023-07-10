@@ -19,10 +19,9 @@ const PostSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    tag: {
-      type: String,
-      required: true,
-      trim: true,
+    post_tags: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tag",
     },
     post_comments: {
       type: mongoose.Schema.Types.ObjectId,

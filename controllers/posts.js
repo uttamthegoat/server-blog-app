@@ -1,3 +1,4 @@
+const Tag = require("../models/Tag");
 const Post = require("../models/Post");
 const Comment = require("../models/Comment");
 const CustomError = require("../errors/CustomError");
@@ -23,11 +24,15 @@ exports.createPost = asyncErrorHandler(async (req, res) => {
     comments: [],
   });
   if (!comment) throw new CustomError(400, false, "Comment not created");
+  const tag = await Tag.create({
+    tags: [],
+  });
+  if (!tag) throw new CustomError(400, false, "Tag not created");
   const new_Post = await Post.create({
     user_posts: req.user.id,
     title: req.body.title,
     description: req.body.description,
-    tag: req.body.tag,
+    post_tags: tag._id,
     post_comments: comment._id,
   });
   if (!new_Post) throw new CustomError(400, false, "Post not created");
@@ -48,7 +53,6 @@ exports.editPost = asyncErrorHandler(async (req, res) => {
   const new_Post = {
     title: req.body.title,
     description: req.body.description,
-    tag: req.body.tag,
   };
   const updated_Post = await Post.findByIdAndUpdate(
     req.params.id,
@@ -75,6 +79,9 @@ exports.deletePost = asyncErrorHandler(async (req, res) => {
   const deleted_Comment = await Comment.findByIdAndDelete(post.post_comments);
   if (!deleted_Comment)
     throw new CustomError(400, false, "Comment to be deleted was not found");
+  const deleted_Tag = await Tag.findByIdAndDelete(post.post_tags);
+  if (!deleted_Tag)
+    throw new CustomError(400, false, "Tags to be deleted were not found");
   const deleted_Post = await Post.findByIdAndDelete(req.params.id);
   if (!deleted_Post) throw new CustomError(400, false, "Post was not deleted");
   res

@@ -1,3 +1,8 @@
+// add the values in .env file before setting up
+// MONGO_URI 
+// PORT
+// JWT_SECRET_KEY
+
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -22,6 +27,7 @@ app.use("/api/v1/blog-app/auth", require("./routes/auth"));
 app.use("/api/v1/blog-app/posts", require("./routes/posts"));
 app.use("/api/v1/blog-app/comments", require("./routes/comments"));
 app.use("/api/v1/blog-app/search", require("./routes/search"));
+app.use("/api/v1/blog-app/tags", require("./routes/tags"));
 // add search routes for tags and titles(posts), for names(users)
 
 // home route
