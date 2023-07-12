@@ -7,6 +7,6 @@ const router = express.Router();
 router.route("/add-tag").post(confirmAuth, addTag);
 
 // get all tags
-router.route("/get-all-tags").get(confirmAuth, getAllTag);
+router.route("/get-all-tags/:id").get(confirmAuth, getAllTag);
 
 module.exports = router;

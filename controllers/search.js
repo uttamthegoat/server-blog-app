@@ -5,7 +5,7 @@ const Tag = require("../models/Tag");
 // search for a post based on title or tag
 // add queries to search for the word
 exports.searchPosts = asyncErrorHandler(async (req, res) => {
-  const searchParam = req.params.id;
+  const searchParam = req.params.id.toLowerCase();
   const tags = await Tag.find();
   const searches = tags.filter((obj) => {
     return obj.tags.includes(searchParam);

@@ -8,6 +8,7 @@ const {
   editPost,
   deletePost,
   myPosts,
+  checkUser,
 } = require("../controllers/posts");
 
 // getAllPosts
@@ -18,6 +19,9 @@ router.route("/getPost/:id").get(confirmAuth, getPost);
 
 // create a post
 router.route("/createPost").post(confirmAuth, createPost);
+
+// check whether the user is the one trying to change the post
+router.route('/check-user/:id').get(confirmAuth,checkUser)
 
 // edit a specific post
 router.route("/editPost/:id").put(confirmAuth, editPost);

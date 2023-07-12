@@ -39,17 +39,25 @@ exports.createPost = asyncErrorHandler(async (req, res) => {
   res.status(200).json({ success: true, result: new_Post });
 });
 
-// PUT : edit a post
-exports.editPost = asyncErrorHandler(async (req, res) => {
+// check whether the user is the one trying to change the post
+exports.checkUser = asyncErrorHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
-  if (!post)
-    throw new CustomError(400, false, "The post to be edited was not found");
   if (post.user_posts !== req.user.id)
     throw new CustomError(
       401,
       false,
       "You are not authorised to edit this post"
     );
+  res
+    .status(200)
+    .json({ success: true, message: "You are allowed to edit the post" });
+});
+
+// PUT : edit a post
+exports.editPost = asyncErrorHandler(async (req, res) => {
+  const post = await Post.findById(req.params.id);
+  if (!post)
+    throw new CustomError(400, false, "The post to be edited was not found");
   const new_Post = {
     title: req.body.title,
     description: req.body.description,
