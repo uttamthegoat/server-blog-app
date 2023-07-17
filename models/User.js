@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const UserSchema = mongoose.Schema(
   {
+    image: {
+      // added profile image field. remember to add image url in profileUpdate endpoint
+      type: String,
+      default: "",
+      trim: true,
+    },
     name: {
       type: String,
       required: true,
@@ -21,10 +27,6 @@ const UserSchema = mongoose.Schema(
     bio: {
       type: String,
       default: "",
-    },
-    profile_pic: {
-      // added profile image field. remember to add image url in profileUpdate endpoint
-      type: String,
       trim: true,
     },
   },

@@ -7,6 +7,7 @@ const {
   logout,
   getUserDetails,
   profileUpdate,
+  stillLoggedIn,
 } = require("../controllers/auth");
 
 // signup route
@@ -22,6 +23,9 @@ router.route("/logout").get(logout);
 router.route("/getUserDetails").get(confirmAuth, getUserDetails);
 
 // profileUpdate route
-router.route("/profileUpdate").put(confirmAuth, profileUpdate);
+router.route("/profile-update").put(confirmAuth, profileUpdate);
+
+// stillLoggedIn route
+// router.route("/verify-login").get(stillLoggedIn);
 
 module.exports = router;

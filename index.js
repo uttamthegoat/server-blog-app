@@ -1,24 +1,23 @@
-// add the values in .env file before setting up
-// MONGO_URI 
-// PORT
-// JWT_SECRET_KEY
-
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
-
-const connectDB = require("./db");
-connectDB();
-
-// express
 const express = require("express");
-const app = express();
-const port = process.env.PORT;
 const cookieParser = require("cookie-parser");
 const CustomError = require("./errors/CustomError");
 const GlobalErrorHandler = require("./middleware/GlobalErrorHandler");
+const connectDB = require("./db");
 
-app.use(cors());
+// express
+const app = express();
+const port = 5002;
+
+connectDB();
+app.use(
+  cors({
+    origin: "https://make-it-up.netlify.app/",
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 
@@ -26,9 +25,9 @@ app.use(express.json());
 app.use("/api/v1/blog-app/auth", require("./routes/auth"));
 app.use("/api/v1/blog-app/posts", require("./routes/posts"));
 app.use("/api/v1/blog-app/comments", require("./routes/comments"));
-app.use("/api/v1/blog-app/search", require("./routes/search"));
+app.use("/api/v1/blog-app/search-tags", require("./routes/search"));
 app.use("/api/v1/blog-app/tags", require("./routes/tags"));
-// add search routes for tags and titles(posts), for names(users)
+app.use("/api/v1/blog-app/image", require("./routes/imageUpload"));
 
 // home route
 app.get("/", (req, res) => {

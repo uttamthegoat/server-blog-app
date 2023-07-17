@@ -5,7 +5,7 @@ const CustomError = require("../errors/CustomError");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 
 // signup
-exports.signup = asyncErrorHandler(async (req, res ) => {
+exports.signup = asyncErrorHandler(async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) {
     throw new CustomError(400, false, "Please Login");
@@ -21,8 +21,8 @@ exports.signup = asyncErrorHandler(async (req, res ) => {
     id: user.id,
   };
   const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: 86000,
-  }); // confirm expiration
+    expiresIn: 60,
+  });
   res
     .cookie("access_token", auth_token, {
       httpOnly: true,
@@ -32,7 +32,7 @@ exports.signup = asyncErrorHandler(async (req, res ) => {
 });
 
 // login
-exports.login = asyncErrorHandler(async (req, res ) => {
+exports.login = asyncErrorHandler(async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (!user) {
     throw new CustomError(401, false, "Please signup first");
@@ -48,8 +48,9 @@ exports.login = asyncErrorHandler(async (req, res ) => {
     id: user.id,
   };
   const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: 86000,
+    expiresIn: 60,
   });
+  console.log(auth_token);
   res
     .cookie("access_token", auth_token, {
       httpOnly: true,
@@ -61,7 +62,7 @@ exports.login = asyncErrorHandler(async (req, res ) => {
 // logout
 exports.logout = asyncErrorHandler(async (req, res) => {
   res.clearCookie("access_token", { httpOnly: true, expires: new Date(0) });
-  res.status(200).json({ message: "Logged out successfully" });
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
 // getUserDetails
@@ -82,6 +83,7 @@ exports.getUserDetails = asyncErrorHandler(async (req, res) => {
 
 // profileUpdate
 exports.profileUpdate = asyncErrorHandler(async (req, res) => {
+  console.log(req.body);
   let user = await User.findOneAndUpdate(
     { _id: req.user.id },
     { $set: { bio: req.body.bio } },
@@ -90,4 +92,11 @@ exports.profileUpdate = asyncErrorHandler(async (req, res) => {
   res
     .status(200)
     .json({ success: true, message: "User details updates", user: user });
+});
+
+exports.stillLoggedIn = asyncErrorHandler(async (req, res) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    throw new CustomError(401, false, "Login session Expired!");
+  }
 });

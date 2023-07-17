@@ -2,9 +2,10 @@ const mongoose = require("mongoose");
 
 const PostSchema = mongoose.Schema(
   {
-    blog_image: {
+    image: {
       // added image field. remember to add link in createPost endpoint
       type: String,
+      default:"",
       trim: true,
     },
     user_posts: {
