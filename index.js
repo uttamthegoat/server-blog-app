@@ -9,17 +9,16 @@ const connectDB = require("./db");
 
 // express
 const app = express();
-const port = 5002;
 
 connectDB();
 app.use(
   cors({
-    origin: "https://make-it-up.netlify.app/",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
 
 // Available Routes
 app.use("/api/v1/blog-app/auth", require("./routes/auth"));
@@ -47,6 +46,6 @@ app.all("*", (req, res, next) => {
 app.use(GlobalErrorHandler);
 
 // listen to port
-app.listen(port, () => {
-  console.log(`api listening at port ${port}`);
+app.listen(process.env.PORT, () => {
+  console.log(`api listening at port ${process.env.PORT}`);
 });

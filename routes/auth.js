@@ -19,7 +19,7 @@ router.route("/login").post(login);
 // logout route
 router.route("/logout").get(logout);
 
-// login route
+// getUserDetails route
 router.route("/getUserDetails").get(confirmAuth, getUserDetails);
 
 // profileUpdate route

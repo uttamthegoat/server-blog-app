@@ -6,26 +6,31 @@ const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 
 // signup
 exports.signup = asyncErrorHandler(async (req, res) => {
-  let user = await User.findOne({ email: req.body.email });
+  const { name, email, password } = req.body;
+  let user = await User.findOne({ email });
   if (user) {
     throw new CustomError(400, false, "Please Login");
   }
   const salt = await bcrypt.genSalt(10);
-  const hashedpassword = await bcrypt.hash(req.body.password, salt);
+  const hashedpassword = await bcrypt.hash(password, salt);
   user = await User.create({
-    name: req.body.name,
-    email: req.body.email,
+    name,
+    email,
     password: hashedpassword,
   });
   const payload = {
     id: user.id,
   };
   const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: 60,
+    expiresIn: "1d",
   });
   res
     .cookie("access_token", auth_token, {
+      sameSite: "strict",
+      path: "/",
+      expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
+      secure: true,
     })
     .status(200)
     .json({ success: true, message: "Signup successfull" });
@@ -48,14 +53,17 @@ exports.login = asyncErrorHandler(async (req, res) => {
     id: user.id,
   };
   const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: 60,
+    expiresIn: "1d",
   });
-  console.log(auth_token);
   res
-    .cookie("access_token", auth_token, {
-      httpOnly: true,
-    })
     .status(200)
+    .cookie("access_token", auth_token, {
+      sameSite: "strict",
+      path: "/",
+      expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: true,
+    })
     .json({ success: true, message: "Login successfull" });
 });
 
@@ -83,7 +91,6 @@ exports.getUserDetails = asyncErrorHandler(async (req, res) => {
 
 // profileUpdate
 exports.profileUpdate = asyncErrorHandler(async (req, res) => {
-  console.log(req.body);
   let user = await User.findOneAndUpdate(
     { _id: req.user.id },
     { $set: { bio: req.body.bio } },
