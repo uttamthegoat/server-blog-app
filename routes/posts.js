@@ -18,7 +18,6 @@ router.route("/").get(confirmAuth, getAllPosts);
 router.route("/getPost/:id").get(confirmAuth, getPost);
 
 // create a post
-// router.route("/createPost").post(createPost);
 router.route("/createPost").post(confirmAuth, createPost);
 
 // check whether the user is the one trying to change the post
