@@ -26,6 +26,6 @@ router.route("/getUserDetails").get(confirmAuth, getUserDetails);
 router.route("/profile-update").put(confirmAuth, profileUpdate);
 
 // stillLoggedIn route
-// router.route("/verify-login").get(stillLoggedIn);
+router.route("/verify-login").get(stillLoggedIn);
 
 module.exports = router;

@@ -6,9 +6,16 @@ const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 
 // GET : get all posts
 exports.getAllPosts = asyncErrorHandler(async (req, res) => {
-  const all_Posts = await Post.find();
+  const all_Posts = await Post.find({});
   if (!all_Posts) throw new CustomError(400, false, "Posts not to be found");
-  res.status(200).json({ success: true, results: all_Posts });
+  const { page, pageSize } = req.query;
+
+  const startIndex = (page - 1) * pageSize;
+  const lastIndex = page * pageSize;
+
+  const results = all_Posts.slice(startIndex, lastIndex);
+  const totalPages = all_Posts.length;
+  res.status(200).json({ success: true, results, totalPages });
 });
 
 // GET : get a specific post

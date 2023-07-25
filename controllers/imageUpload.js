@@ -20,13 +20,13 @@ exports.imageUpload = asyncErrorHandler(async (req, res) => {
   if (!result)
     throw new CustomError(false, 400, "Image not Uploaded! Try Again");
   const url = result.secure_url;
-  const { type, name } = req.body;
+  const { type, email } = req.body;
   const Model = type === "User" ? User : Post;
   const updatedDocument = await Model.findOneAndUpdate(
-    { name: name },
+    { email: email },
     { image: url },
     { new: true }
   );
   // Optionally, perform further actions after image upload (e.g., save image URL, send response)
-  res.json({ image: updatedDocument.image });
+  res.status(200).json({ image: updatedDocument.image });
 });

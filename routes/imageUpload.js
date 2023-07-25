@@ -6,6 +6,6 @@ const upload = multer();
 const confirmAuth = require("../middleware/confirmAuth");
 
 // handle image upload
-router.route("/image-upload").post(confirmAuth,upload.single("image"), imageUpload);
+router.route("/image-upload").post(confirmAuth,upload.single("file"), imageUpload);
 
 module.exports = router;

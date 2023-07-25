@@ -30,7 +30,7 @@ exports.signup = asyncErrorHandler(async (req, res) => {
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: true,
+      // secure: true,      // uncomment it while deployment
     })
     .status(200)
     .json({ success: true, message: "Signup successfull" });
@@ -62,7 +62,7 @@ exports.login = asyncErrorHandler(async (req, res) => {
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: true,
+      // secure: true,      // uncomment it while deployment
     })
     .json({ success: true, message: "Login successfull" });
 });
@@ -76,8 +76,11 @@ exports.logout = asyncErrorHandler(async (req, res) => {
 // getUserDetails
 exports.getUserDetails = asyncErrorHandler(async (req, res) => {
   const userId = req.user.id;
-  const { name, email, bio } = await User.findById(userId).select("-password");
+  const { name, email, bio, image } = await User.findById(userId).select(
+    "-password"
+  );
   const userDetails = {
+    image: image,
     name: name,
     email: email,
     bio: bio,
@@ -104,6 +107,10 @@ exports.profileUpdate = asyncErrorHandler(async (req, res) => {
 exports.stillLoggedIn = asyncErrorHandler(async (req, res) => {
   const token = req.cookies.access_token;
   if (!token) {
-    throw new CustomError(401, false, "Login session Expired!");
+    return res.status(401).json({
+      success: false,
+      status: "logout",
+      message: "Login session Expired! Please Login Again",
+    });
   }
 });
