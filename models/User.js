@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const UserSchema = mongoose.Schema(
   {
     image: {
-      // added profile image field. remember to add image url in profileUpdate endpoint
       type: String,
       default: "",
       trim: true,

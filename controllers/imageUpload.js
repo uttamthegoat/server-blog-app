@@ -13,10 +13,19 @@ cloudinary.config({
 // this route will be used to upload profile images and blog images
 exports.imageUpload = asyncErrorHandler(async (req, res) => {
   const fileStr = req.file.buffer.toString("base64");
+
+  const transformationOptions = {
+    transformation: [
+      { gravity: "face", width: 400, height: 400, crop: "thumb" },
+    ],
+    folder: "Blog_App",
+  };
+
   const result = await cloudinary.uploader.upload(
     `data:image/jpeg;base64,${fileStr}`,
-    { folder: "Blog_App" }
+    transformationOptions
   );
+
   if (!result)
     throw new CustomError(false, 400, "Image not Uploaded! Try Again");
   const url = result.secure_url;
@@ -27,6 +36,5 @@ exports.imageUpload = asyncErrorHandler(async (req, res) => {
     { image: url },
     { new: true }
   );
-  // Optionally, perform further actions after image upload (e.g., save image URL, send response)
   res.status(200).json({ image: updatedDocument.image });
 });

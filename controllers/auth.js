@@ -94,9 +94,10 @@ exports.getUserDetails = asyncErrorHandler(async (req, res) => {
 
 // profileUpdate
 exports.profileUpdate = asyncErrorHandler(async (req, res) => {
+  const { bio, name } = req.body;
   let user = await User.findOneAndUpdate(
     { _id: req.user.id },
-    { $set: { bio: req.body.bio } },
+    { $set: { bio: bio, name: name } },
     { new: true }
   ).select("-password -createdAt -updatedAt -__v");
   res
