@@ -27,6 +27,7 @@ app.use("/api/v1/blog-app/comments", require("./routes/comments"));
 app.use("/api/v1/blog-app/search-tags", require("./routes/search"));
 app.use("/api/v1/blog-app/tags", require("./routes/tags"));
 app.use("/api/v1/blog-app/image", require("./routes/imageUpload"));
+app.use("/api/v1/blog-app/social-media", require("./routes/socialMedia"));
 
 // home route
 app.get("/", (req, res) => {

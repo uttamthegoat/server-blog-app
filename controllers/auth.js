@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const SocialMedia = require("../models/SocialMedia");
 const CustomError = require("../errors/CustomError");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 
@@ -17,6 +18,9 @@ exports.signup = asyncErrorHandler(async (req, res) => {
     name,
     email,
     password: hashedpassword,
+  });
+  const social_media = await SocialMedia.create({
+    user: user.id,
   });
   const payload = {
     id: user.id,
