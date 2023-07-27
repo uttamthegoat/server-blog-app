@@ -27,29 +27,28 @@ exports.getPost = asyncErrorHandler(async (req, res) => {
 
 // POST : create a post
 exports.createPost = asyncErrorHandler(async (req, res) => {
+  const new_Post = await Post.create({
+    user: req.user.id,
+    title: req.body.title,
+    description: req.body.description,
+  });
+  if (!new_Post) throw new CustomError(400, false, "Post not created");
   const comment = await Comment.create({
-    comments: [],
+    post: new_Post.id,
   });
   if (!comment) throw new CustomError(400, false, "Comment not created");
   const tag = await Tag.create({
-    tags: [],
+    post: new_Post.id,
   });
   if (!tag) throw new CustomError(400, false, "Tag not created");
-  const new_Post = await Post.create({
-    user_posts: req.user.id,
-    title: req.body.title,
-    description: req.body.description,
-    post_tags: tag._id,
-    post_comments: comment._id,
-  });
-  if (!new_Post) throw new CustomError(400, false, "Post not created");
   res.status(200).json({ success: true, result: new_Post });
 });
 
-// check whether the user is the one trying to change the post
+// GET : check whether the user is the one trying to change the post
 exports.checkUser = asyncErrorHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
-  if (post.user_posts !== req.user.id)
+  console.log(post.user.valueOf());
+  if (post.user.valueOf() !== req.user.id)
     throw new CustomError(
       401,
       false,
@@ -73,11 +72,14 @@ exports.editPost = asyncErrorHandler(async (req, res) => {
     req.params.id,
     { $set: new_Post },
     { new: true }
-  );
+  ).select("_id title description");
+
   if (!updated_Post) throw new CustomError(400, false, "Post was not Updated");
-  res
-    .status(200)
-    .json({ success: true, message: "Post was successfully updated" });
+  res.status(200).json({
+    success: true,
+    message: "Post was successfully updated",
+    post: updated_Post,
+  });
 });
 
 // DELETE : delete a post
@@ -85,16 +87,17 @@ exports.deletePost = asyncErrorHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
   if (!post)
     throw new CustomError(400, false, "The post to be deleted was not found");
-  if (post.user_posts !== req.user.id)
+  console.log(post.user);
+  if (post.user.valueOf() !== req.user.id)
     throw new CustomError(
       401,
       false,
       "You are not authorised to delete this post"
     );
-  const deleted_Comment = await Comment.findByIdAndDelete(post.post_comments);
+  const deleted_Comment = await Comment.findOneAndDelete({ post: post.id });
   if (!deleted_Comment)
     throw new CustomError(400, false, "Comment to be deleted was not found");
-  const deleted_Tag = await Tag.findByIdAndDelete(post.post_tags);
+  const deleted_Tag = await Tag.findOneAndDelete({ post: post.id });
   if (!deleted_Tag)
     throw new CustomError(400, false, "Tags to be deleted were not found");
   const deleted_Post = await Post.findByIdAndDelete(req.params.id);
@@ -106,7 +109,7 @@ exports.deletePost = asyncErrorHandler(async (req, res) => {
 
 // GET : get user's posts
 exports.myPosts = asyncErrorHandler(async (req, res) => {
-  const my_Posts = await Post.find({ user_posts: req.user.id });
+  const my_Posts = await Post.find({ user: req.user.id });
   if (!my_Posts) throw new CustomError(400, false, "Your posts were not found");
   res.status(200).json({ success: true, results: my_Posts });
 });

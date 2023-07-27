@@ -80,15 +80,9 @@ exports.logout = asyncErrorHandler(async (req, res) => {
 // getUserDetails
 exports.getUserDetails = asyncErrorHandler(async (req, res) => {
   const userId = req.user.id;
-  const { name, email, bio, image } = await User.findById(userId).select(
-    "-password"
+  const userDetails = await User.findById(userId).select(
+    "name email bio image"
   );
-  const userDetails = {
-    image: image,
-    name: name,
-    email: email,
-    bio: bio,
-  };
   res.status(200).send({
     success: true,
     user: userDetails,
