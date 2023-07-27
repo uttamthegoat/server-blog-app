@@ -1,3 +1,4 @@
+const CustomError = require("../errors/CustomError");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 const Post = require("../models/Post");
 const Tag = require("../models/Tag");
@@ -13,5 +14,6 @@ exports.searchPosts = asyncErrorHandler(async (req, res) => {
   const searchResults = await Post.find({
     _id: { $in: searches.map((tag) => tag.post) },
   }).select("image title description");
+  if(!searchResults) throw new CustomError(400,false,"Search Results not found")
   res.status(200).json({ success: true, results: searchResults });
 });
