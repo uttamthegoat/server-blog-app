@@ -27,7 +27,7 @@ exports.imageUpload = asyncErrorHandler(async (req, res) => {
   );
 
   if (!result)
-    throw new CustomError(false, 400, "Image not Uploaded! Try Again");
+    throw new CustomError(400, false, "Image not Uploaded! Try Again");
   const url = result.secure_url;
   const { type, email } = req.body;
   const Model = type === "User" ? User : Post;
