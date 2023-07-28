@@ -14,8 +14,8 @@ exports.getAllPosts = asyncErrorHandler(async (req, res) => {
   const lastIndex = page * pageSize;
 
   const results = all_Posts.slice(startIndex, lastIndex);
-  const totalPages = all_Posts.length;
-  res.status(200).json({ success: true, results, totalPages });
+  const totalResults = all_Posts.length;
+  res.status(200).json({ success: true, totalResults, results });
 });
 
 // GET : get a specific post
@@ -34,11 +34,11 @@ exports.createPost = asyncErrorHandler(async (req, res) => {
   });
   if (!new_Post) throw new CustomError(400, false, "Post not created");
   const comment = await Comment.create({
-    post: new_Post.id,
+    post: new_Post._id,
   });
   if (!comment) throw new CustomError(400, false, "Comment not created");
   const tag = await Tag.create({
-    post: new_Post.id,
+    post: new_Post._id,
   });
   if (!tag) throw new CustomError(400, false, "Tag not created");
   res.status(200).json({ success: true, result: new_Post });
@@ -47,7 +47,6 @@ exports.createPost = asyncErrorHandler(async (req, res) => {
 // GET : check whether the user is the one trying to change the post
 exports.checkUser = asyncErrorHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
-  console.log(post.user.valueOf());
   if (post.user.valueOf() !== req.user.id)
     throw new CustomError(
       401,
@@ -87,7 +86,6 @@ exports.deletePost = asyncErrorHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
   if (!post)
     throw new CustomError(400, false, "The post to be deleted was not found");
-  console.log(post.user);
   if (post.user.valueOf() !== req.user.id)
     throw new CustomError(
       401,
@@ -109,7 +107,8 @@ exports.deletePost = asyncErrorHandler(async (req, res) => {
 
 // GET : get user's posts
 exports.myPosts = asyncErrorHandler(async (req, res) => {
-  const my_Posts = await Post.find({ user: req.user.id });
-  if (!my_Posts) throw new CustomError(400, false, "Your posts were not found");
-  res.status(200).json({ success: true, results: my_Posts });
+  const results = await Post.find({ user: req.user.id });
+  if (!results) throw new CustomError(400, false, "Your posts were not found");
+  const totalResults = results.length;
+  res.status(200).json({ success: true, totalResults, results });
 });

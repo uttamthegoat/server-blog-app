@@ -7,7 +7,7 @@ const {
 } = require("../controllers/socialMedia");
 
 // Add social media information
-router.route("/add-social-media").post(confirmAuth, createSocialMedia);
+router.route("/add-social-media").put(confirmAuth, createSocialMedia);
 
 // Get all social media information
 router.route("/get-social-media").get(confirmAuth, getSocialMedia);

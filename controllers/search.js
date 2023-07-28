@@ -11,9 +11,10 @@ exports.searchPosts = asyncErrorHandler(async (req, res) => {
   const searches = tags.filter((obj) => {
     return obj.tags.includes(searchParam);
   });
-  const searchResults = await Post.find({
+  const results = await Post.find({
     _id: { $in: searches.map((tag) => tag.post) },
   }).select("image title description");
-  if(!searchResults) throw new CustomError(400,false,"Search Results not found")
-  res.status(200).json({ success: true, results: searchResults });
+  if(!results) throw new CustomError(400,false,"Search Results not found")
+  const totalResults = results.length
+  res.status(200).json({ success: true, totalResults, results });
 });

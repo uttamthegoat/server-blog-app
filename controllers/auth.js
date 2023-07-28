@@ -20,10 +20,10 @@ exports.signup = asyncErrorHandler(async (req, res) => {
     password: hashedpassword,
   });
   const social_media = await SocialMedia.create({
-    user: user.id,
+    user: user._id,
   });
   const payload = {
-    id: user.id,
+    id: user._id,
   };
   const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
     expiresIn: "1d",
