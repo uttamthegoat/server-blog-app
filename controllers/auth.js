@@ -30,11 +30,11 @@ exports.signup = asyncErrorHandler(async (req, res) => {
   });
   res
     .cookie("access_token", auth_token, {
-      sameSite: "strict",
+      sameSite: "none",
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: true,      // uncomment it while deployment
+      secure: true, // uncomment it while deployment
     })
     .status(200)
     .json({ success: true, message: "Signup successfull" });
