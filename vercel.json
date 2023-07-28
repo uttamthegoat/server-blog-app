@@ -15,7 +15,7 @@
   "env": {
     "MONGO_URI": "mongodb+srv://19516uttam:7CG6Izvlb8nIzBPH@cluster0.0jsxsar.mongodb.net/Blog_App?retryWrites=true&w=majority",
     "JWT_SECRET_KEY": "VSB43BVbdsh",
-    "PORT": 5002,
+    "PORT": "5002",
     "cloud_name": "dnsedswbm",
     "api_key": 664979512657747,
     "api_secret": "SPXwUr50qyoqzI5B4gzxBv5B4xQ"
