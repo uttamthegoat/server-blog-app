@@ -31,6 +31,7 @@ exports.signup = asyncErrorHandler(async (req, res) => {
   res
     .cookie("access_token", auth_token, {
       sameSite: "none",
+      // sameSite: "strict",
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
@@ -63,6 +64,7 @@ exports.login = asyncErrorHandler(async (req, res) => {
     .status(200)
     .cookie("access_token", auth_token, {
       sameSite: "none",
+      // sameSite: "strict",
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
