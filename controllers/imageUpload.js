@@ -21,10 +21,16 @@ exports.imageUpload = asyncErrorHandler(async (req, res) => {
     folder: "Blog_App",
   };
 
-  const result = await cloudinary.uploader.upload(
-    `data:image/jpeg;base64,${fileStr}`,
-    transformationOptions
-  );
+  if (Model === "User") {
+    var result = await cloudinary.uploader.upload(
+      `data:image/jpeg;base64,${fileStr}`,
+      transformationOptions
+    );
+  } else {
+    var result = await cloudinary.uploader.upload(
+      `data:image/jpeg;base64,${fileStr}`
+    );
+  }
 
   if (!result)
     throw new CustomError(400, false, "Image not Uploaded! Try Again");
