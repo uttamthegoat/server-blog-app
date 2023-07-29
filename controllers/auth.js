@@ -55,7 +55,7 @@ exports.login = asyncErrorHandler(async (req, res) => {
     throw new CustomError(400, false, "Password Incorrect");
   }
   const payload = {
-    id: user.id,
+    id: user._id,
   };
   const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
     expiresIn: "1d",
@@ -68,7 +68,7 @@ exports.login = asyncErrorHandler(async (req, res) => {
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: true,      // uncomment it while deployment
+      secure: true, // uncomment it while deployment
     })
     .json({ success: true, message: "Login successfull" });
 });
