@@ -35,7 +35,7 @@ app.use("/api/v1/blog-app/social-media", require("./routes/socialMedia"));
 
 // home route
 app.get("/", (req, res) => {
-  res.send("Blog App Server");
+  res.send("Blog App Node server");
 });
 
 // throw error for wrong route
