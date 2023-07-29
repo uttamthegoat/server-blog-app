@@ -10,21 +10,19 @@ const connectDB = require("./db");
 // express
 const app = express();
 
+const corsOptions = {
+  origin: "https://client-blog-app-bvc.netlify.app",
+  credentials: true,
+};
+// const corsOptions = {
+//   origin: "http://localhost:5173",
+//   credentials: true,
+// };
+
 connectDB();
-app.use(
-  cors({
-    origin: "https://client-blog-app-bvc.netlify.app",
-    credentials: true,
-  })
-);
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173",
-//     credentials: true,
-//   })
-// );
-app.use(express.json());
+app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use(express.json());
 
 // Available Routes
 app.use("/api/v1/blog-app/auth", require("./routes/auth"));
