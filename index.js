@@ -11,13 +11,10 @@ const connectDB = require("./db");
 const app = express();
 
 const corsOptions = {
-  origin: "https://client-blog-app-bvc.netlify.app",
+  origin: "http://localhost:5173",
+  //   origin: "https://client-blog-app-bvc.netlify.app",
   credentials: true,
 };
-// const corsOptions = {
-//   origin: "http://localhost:5173",
-//   credentials: true,
-// };
 
 connectDB();
 app.use(cors(corsOptions));

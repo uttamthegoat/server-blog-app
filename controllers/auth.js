@@ -30,12 +30,12 @@ exports.signup = asyncErrorHandler(async (req, res) => {
   });
   res
     .cookie("access_token", auth_token, {
-      sameSite: "none",
-      // sameSite: "strict",
+      // sameSite: "none",        // uncomment it while deployment
+      sameSite: "strict", // comment it while deployment
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: true, // uncomment it while deployment
+      // secure: true, // uncomment it while deployment
     })
     .status(200)
     .json({ success: true, message: "Signup successfull" });
@@ -63,12 +63,12 @@ exports.login = asyncErrorHandler(async (req, res) => {
   res
     .status(200)
     .cookie("access_token", auth_token, {
-      sameSite: "none",
-      // sameSite: "strict",
+      // sameSite: "none",    // uncomment it while deployment
+      sameSite: "lax", // comment it while deployment
       path: "/",
       expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: true, // uncomment it while deployment
+      // secure: true, // uncomment it while deployment
     })
     .json({ success: true, message: "Login successfull" });
 });
