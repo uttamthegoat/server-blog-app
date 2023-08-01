@@ -102,7 +102,7 @@ exports.profileUpdate = asyncErrorHandler(async (req, res) => {
   ).select("-password -createdAt -updatedAt -__v");
   res
     .status(200)
-    .json({ success: true, message: "User details updates", user: user });
+    .json({ success: true, message: "Your details are updated", user: user });
 });
 
 exports.stillLoggedIn = asyncErrorHandler(async (req, res) => {

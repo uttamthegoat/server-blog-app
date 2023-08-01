@@ -11,36 +11,61 @@ cloudinary.config({
 });
 
 // this route will be used to upload profile images and blog images
-exports.imageUpload = asyncErrorHandler(async (req, res) => {
+exports.imageUploadUser = asyncErrorHandler(async (req, res) => {
+  const { email } = req.body;
   const fileStr = req.file.buffer.toString("base64");
 
-  const transformationOptions = {
+  let transformationOptions = {
     transformation: [
       { gravity: "face", width: 400, height: 400, crop: "thumb" },
     ],
-    folder: "Blog_App",
+    folder: "Blog_App/Users",
   };
 
-  if (Model === "User") {
-    var result = await cloudinary.uploader.upload(
-      `data:image/jpeg;base64,${fileStr}`,
-      transformationOptions
-    );
-  } else {
-    var result = await cloudinary.uploader.upload(
-      `data:image/jpeg;base64,${fileStr}`
-    );
-  }
+  var result = await cloudinary.uploader.upload(
+    `data:image/jpeg;base64,${fileStr}`,
+    transformationOptions
+  );
 
   if (!result)
     throw new CustomError(400, false, "Image not Uploaded! Try Again");
   const url = result.secure_url;
-  const { type, email } = req.body;
-  const Model = type === "User" ? User : Post;
-  const updatedDocument = await Model.findOneAndUpdate(
+  const updatedDocument = await User.findOneAndUpdate(
     { email: email },
     { image: url },
     { new: true }
   );
-  res.status(200).json({ image: updatedDocument.image });
+  res.status(200).json({
+    success: true,
+    message: "Image successfully updated",
+    image: updatedDocument.image,
+  });
+});
+
+exports.imageUploadPost = asyncErrorHandler(async (req, res) => {
+  const { email } = req.body;
+  const fileStr = req.file.buffer.toString("base64");
+
+  const transformationOptions = {
+    folder: "Blog_App/Posts",
+  };
+
+  var result = await cloudinary.uploader.upload(
+    `data:image/jpeg;base64,${fileStr}`,
+    transformationOptions
+  );
+  if (!result)
+    throw new CustomError(400, false, "Image not Uploaded! Try Again");
+
+  const url = result.secure_url;
+  const updatedDocument = await Post.findOneAndUpdate(
+    { email: email },
+    { image: url },
+    { new: true }
+  );
+  res.status(200).json({
+    success: true,
+    message: "Image successfully updated",
+    image: updatedDocument.image,
+  });
 });
