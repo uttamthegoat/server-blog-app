@@ -3,17 +3,6 @@ const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 const Post = require("../models/Post");
 const Tag = require("../models/Tag");
 
-// add a tag
-exports.addTag = asyncErrorHandler(async (req, res) => {
-  const { id, tag } = req.body;
-  const post = await Post.findById(id);
-  if (!post) throw new CustomError(404, false, "Post was not found");
-  const old_tag = await Tag.findOne({ post: post.id });
-  if (!old_tag) throw new CustomError(404, false, "Tags were not found");
-  old_tag.tags = old_tag.tags.concat(tag.toLowerCase().trim());
-  await old_tag.save();
-  res.status(200).json({ success: true, message: "Tag added successfully" });
-});
 
 // get all tags
 exports.getAllTag = asyncErrorHandler(async (req, res) => {
@@ -26,4 +15,18 @@ exports.getAllTag = asyncErrorHandler(async (req, res) => {
     results: tag.tags,
     message: "Tags fetched successfully",
   });
+});
+
+// add a tag
+exports.addNewTag = asyncErrorHandler(async (req, res) => {
+  const { id, tag } = req.body;
+  const post = await Post.findById(id);
+  if (!post) throw new CustomError(404, false, "Post was not found");
+  const old_tag = await Tag.findOne({ post: post.id });
+  if (!old_tag) throw new CustomError(404, false, "Tags were not found");
+  const new_tags = tag.map((tag) => tag.toLowerCase().trim());
+  console.log(new_tags);
+  old_tag.tags = old_tag.tags.concat(new_tags);
+  await old_tag.save();
+  res.status(200).json({ success: true, message: "Tag added successfully" });
 });

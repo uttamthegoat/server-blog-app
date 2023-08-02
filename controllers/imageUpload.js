@@ -10,7 +10,7 @@ cloudinary.config({
   api_secret: process.env.api_secret,
 });
 
-// this route will be used to upload profile images and blog images
+// this route will be used to upload profile images
 exports.imageUploadUser = asyncErrorHandler(async (req, res) => {
   const { email } = req.body;
   const fileStr = req.file.buffer.toString("base64");
@@ -42,8 +42,9 @@ exports.imageUploadUser = asyncErrorHandler(async (req, res) => {
   });
 });
 
+// this route will be used to upload blog images
 exports.imageUploadPost = asyncErrorHandler(async (req, res) => {
-  const { email } = req.body;
+  const { id } = req.body;
   const fileStr = req.file.buffer.toString("base64");
 
   const transformationOptions = {
@@ -59,7 +60,7 @@ exports.imageUploadPost = asyncErrorHandler(async (req, res) => {
 
   const url = result.secure_url;
   const updatedDocument = await Post.findOneAndUpdate(
-    { email: email },
+    { _id: id },
     { image: url },
     { new: true }
   );
