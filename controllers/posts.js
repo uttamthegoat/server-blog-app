@@ -22,7 +22,10 @@ exports.getAllPosts = asyncErrorHandler(async (req, res) => {
 exports.getPost = asyncErrorHandler(async (req, res) => {
   const get_Post = await Post.findById(req.params.id);
   if (!get_Post) throw new CustomError(400, false, "Post not to be found");
-  res.status(200).json({ success: true, result: get_Post });
+  const post_tags = await Tag.findOne({ post: req.params.id });
+  if (!post_tags) throw new CustomError(400, false, "Tags not to be found");
+  const { tags } = post_tags;
+  res.status(200).json({ success: true, tags, post: get_Post });
 });
 
 // POST : create a post
@@ -41,7 +44,11 @@ exports.createPost = asyncErrorHandler(async (req, res) => {
     post: new_Post._id,
   });
   if (!tag) throw new CustomError(400, false, "Tag not created");
-  res.status(200).json({ success: true, result: new_Post,message:"Blog has been successfully created" });
+  res.status(200).json({
+    success: true,
+    result: new_Post,
+    message: "Blog has been successfully created",
+  });
 });
 
 // GET : check whether the user is the one trying to change the post
