@@ -1,5 +1,7 @@
 const Tag = require("../models/Tag");
+const User = require("../models/User");
 const Post = require("../models/Post");
+const SocialMedia = require("../models/SocialMedia");
 const Comment = require("../models/Comment");
 const CustomError = require("../errors/CustomError");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
@@ -22,10 +24,20 @@ exports.getAllPosts = asyncErrorHandler(async (req, res) => {
 exports.getPost = asyncErrorHandler(async (req, res) => {
   const get_Post = await Post.findById(req.params.id);
   if (!get_Post) throw new CustomError(400, false, "Post not to be found");
+  const userId = get_Post.user;
   const post_tags = await Tag.findOne({ post: req.params.id });
   if (!post_tags) throw new CustomError(400, false, "Tags not to be found");
   const { tags } = post_tags;
-  res.status(200).json({ success: true, tags, post: get_Post });
+  const author = await User.findById(userId).select("name email image");
+  if (!author) throw new CustomError(400, false, "Author not found");
+  const socialMedia = await SocialMedia.findOne({ user: author._id }).select(
+    "instagram facebook twitter linkedin"
+  );
+  if (!socialMedia)
+    throw new CustomError(400, false, "Author's social media not found");
+  res
+    .status(200)
+    .json({ success: true, tags, author, socialMedia, post: get_Post });
 });
 
 // POST : create a post
