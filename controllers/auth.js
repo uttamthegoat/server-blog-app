@@ -1,76 +1,36 @@
-const bcrypt = require("bcryptjs");
-var jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const SocialMedia = require("../models/SocialMedia");
 const CustomError = require("../errors/CustomError");
 const asyncErrorHandler = require("../middleware/asyncErrorHandler");
+const { generateToken } = require("../utils/generateToken");
 
 // signup
 exports.signup = asyncErrorHandler(async (req, res) => {
   const { name, email, password } = req.body;
   let user = await User.findOne({ email });
-  if (user) {
-    throw new CustomError(400, false, "Please Login");
-  }
-  const salt = await bcrypt.genSalt(10);
-  const hashedpassword = await bcrypt.hash(password, salt);
-  user = await User.create({
+  if (user) throw new CustomError(400, false, "Please Login");
+  user = new User({
     name,
     email,
-    password: hashedpassword,
+    password,
   });
-  const social_media = await SocialMedia.create({
-    user: user._id,
+  const newUser = await user.save();
+  if (!user) throw new CustomError(404, false, "User not created! Try again");
+  await SocialMedia.create({
+    user: newUser._id,
   });
-  const payload = {
-    id: user._id,
-  };
-  const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: "1d",
-  });
-  res
-    .cookie("access_token", auth_token, {
-      // sameSite: "none",        // uncomment it while deployment
-      sameSite: "strict", // comment it while deployment
-      path: "/",
-      expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      // secure: true, // uncomment it while deployment
-    })
-    .status(200)
-    .json({ success: true, message: "Signup successfull" });
+  generateToken(newUser._id, res);
+  res.status(200).json({ success: true, message: "Signup successfull" });
 });
 
 // login
 exports.login = asyncErrorHandler(async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
-  if (!user) {
-    throw new CustomError(401, false, "Please signup first");
-  }
-  const passwordCompare = await bcrypt.compare(
-    req.body.password,
-    user.password
-  );
-  if (!passwordCompare) {
-    throw new CustomError(400, false, "Password Incorrect");
-  }
-  const payload = {
-    id: user._id,
-  };
-  const auth_token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: "1d",
-  });
-  res
-    .status(200)
-    .cookie("access_token", auth_token, {
-      // sameSite: "none",    // uncomment it while deployment
-      sameSite: "lax", // comment it while deployment
-      path: "/",
-      expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      // secure: true, // uncomment it while deployment
-    })
-    .json({ success: true, message: "Login successfull" });
+  if (!user) throw new CustomError(401, false, "Please signup first");
+  const passwordCompare = user.comparePassword(req.body.password);
+  if (!passwordCompare) throw new CustomError(400, false, "Password Incorrect");
+  generateToken(user._id, res);
+  res.status(200).json({ success: true, message: "Login successfull" });
 });
 
 // logout
