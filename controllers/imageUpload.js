@@ -3,6 +3,7 @@ const asyncErrorHandler = require("../middleware/asyncErrorHandler");
 const cloudinary = require("cloudinary").v2;
 const User = require("../models/User");
 const Post = require("../models/Post");
+const sharp = require("sharp");
 
 cloudinary.config({
   cloud_name: process.env.cloud_name,
@@ -13,8 +14,11 @@ cloudinary.config({
 // this route will be used to upload profile images
 exports.imageUploadUser = asyncErrorHandler(async (req, res) => {
   const { email } = req.body;
-  const fileStr = req.file.buffer.toString("base64");
+  
+  const webpBuffer = await sharp(req.file.buffer).toFormat("webp").toBuffer();
 
+  const fileStr = webpBuffer.toString("base64");
+  
   let transformationOptions = {
     transformation: [
       { gravity: "face", width: 400, height: 400, crop: "thumb" },
@@ -45,7 +49,10 @@ exports.imageUploadUser = asyncErrorHandler(async (req, res) => {
 // this route will be used to upload blog images
 exports.imageUploadPost = asyncErrorHandler(async (req, res) => {
   const { id } = req.body;
-  const fileStr = req.file.buffer.toString("base64");
+  
+  const webpBuffer = await sharp(req.file.buffer).toFormat("webp").toBuffer();
+  
+  const fileStr = webpBuffer.toString("base64");
 
   const transformationOptions = {
     folder: "Blog_App/Posts",
