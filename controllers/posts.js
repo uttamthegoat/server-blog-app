@@ -67,14 +67,10 @@ exports.createPost = asyncErrorHandler(async (req, res) => {
 exports.checkUser = asyncErrorHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
   if (post.user.valueOf() !== req.user.id)
-    throw new CustomError(
-      401,
-      false,
-      "You are not authorised to edit this post"
-    );
+    throw new CustomError(401, false, "You are not the author of this blog!");
   res
     .status(200)
-    .json({ success: true, message: "You are allowed to edit the post" });
+    .json({ success: true, message: "You are allowed to edit the blog" });
 });
 
 // PUT : edit a post
@@ -93,10 +89,15 @@ exports.editPost = asyncErrorHandler(async (req, res) => {
   ).select("_id title description");
 
   if (!updated_Post) throw new CustomError(400, false, "Post was not Updated");
+  const newTags = await Tag.findOneAndUpdate(
+    { post: post._id },
+    { $set: { tags: req.body.tags } },
+    { new: true }
+  );
+  if (!newTags) throw new CustomError(400, false, "The tags were not updated");
   res.status(200).json({
     success: true,
-    message: "Post was successfully updated",
-    post: updated_Post,
+    message: "Blog was successfully updated",
   });
 });
 
@@ -106,11 +107,7 @@ exports.deletePost = asyncErrorHandler(async (req, res) => {
   if (!post)
     throw new CustomError(400, false, "The post to be deleted was not found");
   if (post.user.valueOf() !== req.user.id)
-    throw new CustomError(
-      401,
-      false,
-      "You are not authorised to delete this post"
-    );
+    throw new CustomError(401, false, "You are not the author of this blog!");
   const deleted_Comment = await Comment.findOneAndDelete({ post: post.id });
   if (!deleted_Comment)
     throw new CustomError(400, false, "Comment to be deleted was not found");
