@@ -15,7 +15,9 @@ exports.getAllPosts = asyncErrorHandler(async (req, res) => {
   const startIndex = (page - 1) * pageSize;
   const lastIndex = page * pageSize;
 
-  const results = all_Posts.slice(startIndex, lastIndex);
+  const reversedPosts = all_Posts.reverse();
+
+  const results = reversedPosts.slice(startIndex, lastIndex);
   const totalResults = all_Posts.length;
   res.status(200).json({ success: true, totalResults, results });
 });
