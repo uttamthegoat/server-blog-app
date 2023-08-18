@@ -27,7 +27,7 @@ exports.signup = asyncErrorHandler(async (req, res) => {
 exports.login = asyncErrorHandler(async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (!user) throw new CustomError(401, false, "Please signup first");
-  const passwordCompare = user.comparePassword(req.body.password);
+  const passwordCompare = await user.comparePassword(req.body.password);
   if (!passwordCompare) throw new CustomError(400, false, "Password Incorrect");
   generateToken(user._id, res);
   res.status(200).json({ success: true, message: "Login successfull" });

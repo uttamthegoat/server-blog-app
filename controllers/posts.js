@@ -23,7 +23,7 @@ exports.getAllPosts = asyncErrorHandler(async (req, res) => {
 // GET : get a specific post
 exports.getPost = asyncErrorHandler(async (req, res) => {
   const get_Post = await Post.findById(req.params.id);
-  if (!get_Post) throw new CustomError(400, false, "Post not to be found");
+  if (!get_Post) throw new CustomError(400, false, "Post not to be found!");
   const userId = get_Post.user;
   const post_tags = await Tag.findOne({ post: req.params.id });
   if (!post_tags) throw new CustomError(400, false, "Tags not to be found");
