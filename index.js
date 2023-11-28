@@ -12,7 +12,7 @@ const app = express();
 
 const corsOptions = {
   // origin: "http://localhost:5173",
-  origin: "https://client-blog-app-bvc.netlify.app",
+  origin: "https://blog-ger.netlify.app",
   credentials: true,
 };
 
